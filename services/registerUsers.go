@@ -12,7 +12,7 @@ import (
 )
 
 func readUsersFile() []byte {
-	file, err := os.Open("users.txt")
+	file, err := os.Open("./configfiles/users.txt")
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -25,12 +25,12 @@ func readUsersFile() []byte {
 
 func addUser(u *models.User) (bool, string) {
 
-	password := "Dan12345678@."
+	password := GenerateRandomPassword()
 
 	argUser := []string{"-m", "-d", u.Directory, "-G", u.Group, "-s", u.Shell, u.Name}
 	argPass := []string{"-c", fmt.Sprintf("echo %s:%s | chpasswd", u.Name, password)}
 
-	userCmd := exec.Command("useradd", argUser...)
+	userCmd := exec.Command("/bin/useradd", argUser...)
 	passCmd := exec.Command("/bin/sh", argPass...)
 
 	_, userCmdErr := userCmd.Output()
@@ -60,10 +60,18 @@ func RegisterUsers() {
 	json.Unmarshal(data, &user)
 
 	for i := range user.Users {
-		info, passwd := addUser(&user.Users[i])
+		currentOsUsers := GetExistentUsers()
 
-		if info {
-			fmt.Println("User was added:", user.Users[i].Name, "Password:", passwd)
+		userExists := compare(currentOsUsers, user.Users[i].Name)
+
+		if userExists == false {
+			info, passwd := addUser(&user.Users[i])
+
+			if info {
+				fmt.Println("User was added:", user.Users[i].Name, "Password:", passwd)
+			}
+		} else {
+			fmt.Println("The user: ", user.Users[i].Name, "already exists in the system")
 		}
 	}
 }

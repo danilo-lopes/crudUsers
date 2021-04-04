@@ -7,14 +7,10 @@ import (
 	"github.com/danilo-lopes/crudUsers/services"
 )
 
-// const (
-// 	userFile string = "/etc/passwd"
-// )
-
 func main() {
 
 	for {
-		fmt.Println("Software Version: 1.0")
+		fmt.Println("Software Version: 1.2")
 
 		fmt.Println("\n 1 - Add Users \n 2 - Lock/Unlock Users \n 3 - Update an User \n 4 - Exit")
 
